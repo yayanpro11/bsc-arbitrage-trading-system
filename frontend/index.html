@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSC Arbitrage Trading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white font-[Inter]">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4">BSC Arbitrage Trading</h1>
+            <p class="text-gray-400">Execute arbitrage trades across multiple DEXes on BSC</p>
+        </header>
+
+        <!-- Market Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gray-800 p-6 rounded-lg" data-market="PANCAKESWAP">
+                <h3 class="text-lg font-semibold mb-2">PancakeSwap</h3>
+                <div class="text-sm text-gray-400">BUSD/BTCB</div>
+                <div class="text-xl font-bold mt-2 price">$28,450.32</div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg" data-market="BISWAP">
+                <h3 class="text-lg font-semibold mb-2">BiSwap</h3>
+                <div class="text-sm text-gray-400">BUSD/BTCB</div>
+                <div class="text-xl font-bold mt-2 price">$28,475.15</div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg" data-market="APESWAP">
+                <h3 class="text-lg font-semibold mb-2">ApeSwap</h3>
+                <div class="text-sm text-gray-400">BUSD/BTCB</div>
+                <div class="text-xl font-bold mt-2 price">$28,445.89</div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-lg" data-market="MDEX">
+                <h3 class="text-lg font-semibold mb-2">MDEX</h3>
+                <div class="text-sm text-gray-400">BUSD/BTCB</div>
+                <div class="text-xl font-bold mt-2 price">$28,460.75</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Trading Interface -->
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h2 class="text-xl font-semibold mb-6">Trading Interface</h2>
+                
+                <!-- Wallet Connection -->
+                <div class="mb-6">
+                    <button id="connectWallet" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full flex items-center justify-center gap-2">
+                        <i class="fas fa-wallet"></i>
+                        Connect Wallet
+                    </button>
+                    <p id="walletAddress" class="mt-2 text-center text-gray-400"></p>
+                </div>
+
+                <!-- Trading Form -->
+                <div class="space-y-4">
+                    <!-- Token Pair Selection -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Select Token Pair</label>
+                        <select id="tokenPair" class="bg-gray-700 text-white rounded p-3 w-full">
+                            <option value="BUSD-BTCB">BUSD-BTCB</option>
+                            <option value="BUSD-ETH">BUSD-ETH</option>
+                            <option value="BUSD-CAKE">BUSD-CAKE</option>
+                            <option value="BUSD-USDT">BUSD-USDT</option>
+                            <option value="BTCB-ETH">BTCB-ETH</option>
+                            <option value="BTCB-CAKE">BTCB-CAKE</option>
+                            <option value="ETH-CAKE">ETH-CAKE</option>
+                            <option value="ETH-USDT">ETH-USDT</option>
+                            <option value="CAKE-USDT">CAKE-USDT</option>
+                            <option value="BNB-BUSD">BNB-BUSD</option>
+                            <option value="BNB-USDT">BNB-USDT</option>
+                        </select>
+                    </div>
+
+                    <!-- Amount Input -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Amount (BUSD)</label>
+                        <div class="relative">
+                            <input type="number" id="amount" placeholder="0.0" class="bg-gray-700 text-white rounded p-3 w-full">
+                            <button class="absolute right-2 top-2 px-2 py-1 bg-gray-600 rounded text-sm">MAX</button>
+                        </div>
+                    </div>
+
+                    <!-- Market Selection -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">From Market</label>
+                            <select id="fromMarket" class="bg-gray-700 text-white rounded p-3 w-full">
+                                <option value="pancakeswap">PancakeSwap</option>
+                                <option value="biswap">BiSwap</option>
+                                <option value="apeswap">ApeSwap</option>
+                                <option value="mdex">MDEX</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">To Market</label>
+                            <select id="toMarket" class="bg-gray-700 text-white rounded p-3 w-full">
+                                <option value="biswap">BiSwap</option>
+                                <option value="pancakeswap">PancakeSwap</option>
+                                <option value="apeswap">ApeSwap</option>
+                                <option value="mdex">MDEX</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Profit Display -->
+                    <div class="bg-gray-700 p-4 rounded">
+                        <div class="text-sm text-gray-400">Expected Profit</div>
+                        <div id="profitPercentage" class="text-2xl font-bold text-green-500">0.00%</div>
+                    </div>
+
+                    <!-- Execute Button -->
+                    <button id="executeArbitrage" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded w-full mt-6 flex items-center justify-center gap-2">
+                        <i class="fas fa-exchange-alt"></i>
+                        Execute Arbitrage
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <h2 class="text-xl font-semibold mb-6">Transaction History</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left py-3 px-4">Time</th>
+                                <th class="text-left py-3 px-4">Pair</th>
+                                <th class="text-left py-3 px-4">Amount</th>
+                                <th class="text-left py-3 px-4">Profit</th>
+                                <th class="text-left py-3 px-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionHistory">
+                            <!-- Transaction rows will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app
